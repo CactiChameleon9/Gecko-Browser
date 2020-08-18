@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Gecko Browser</string>
+    <string name="location_hint">https://example.com</string>
+    <string name="_0">0</string>
+    <string name="trackers_blocked">Trackers Blocked</string>
+    <string name="disable_javascript">Disable Javascript</string>
+    <string name="settings">Settings</string>
+    <string name="disable_tracking_protection">Disable Tracking protection</string>
+    <string name="desktop_mode">Desktop Mode</string>
+    <string name="private_mode">Private Mode (no use yet)</string>
+    <string name="custom_user_agent">Custom User Agent</string>
+    <string name="custom_user_agent_hint">User agent string here (desktop ignored)</string>
+    <string name="title1_browsing_settings">Browsing Settings</string>
+    <string name="title2_ui_settings">UI Settings</string>
+    <string name="autohide_search_bar">Auto-hide Search Bar (TODO)</string>
+    <string name="save">Save</string>
+    <string name="title3_search_settings">Search Settings</string>
+    <string name="search_engine">Search Engine</string>
+    <string name="search_engine_hint">duckduckgo/?q=</string>
+    <string name="hide_white_splash">Hide White Loading Page</string>
+    <string name="search_suggestions">Search Suggestions (TODO)</string>
+</resources>

@@ -1,0 +1,48 @@
+apply plugin: 'com.android.application'
+
+ext {
+    geckoviewChannel = "-beta" //if nightly or beta wanted use "-nightly" or "-beta"
+    geckoviewVersion = "80.0.20200728204253"
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.1"
+
+    defaultConfig {
+        applicationId "com.example.geckobrowser"
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+
+
+    implementation ("org.mozilla.geckoview:geckoview${geckoviewChannel}:${geckoviewVersion}") {
+        exclude module: 'snakeyaml' // disable non-compatible yaml library
+    }
+    implementation "org.yaml:snakeyaml:1.26:android" // use updated yaml library compatible with old Android
+}
