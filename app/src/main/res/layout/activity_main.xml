@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarView"
         android:layout_width="match_parent"
@@ -16,35 +17,85 @@
         app:contentInsetRight="0dp"
         app:contentInsetStart="0dp">
 
-        <TextView
-            android:id="@+id/trackerCountView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/circle_background"
-            android:gravity="center"
-            android:text="@string/_0"
-            android:textColor="@android:color/white"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:adjustViewBounds="true"/>
-
         <RelativeLayout
             android:id="@+id/toolbarRelativeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageButton
+                android:id="@+id/tabsCountViewImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/tab_icon" />
+
+            <TextView
+                android:id="@+id/tabsCountView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/tabsCountViewImage"
+                android:layout_alignLeft="@id/tabsCountViewImage"
+                android:layout_alignTop="@id/tabsCountViewImage"
+                android:layout_alignEnd="@id/tabsCountViewImage"
+                android:layout_alignRight="@id/tabsCountViewImage"
+                android:layout_alignBottom="@id/tabsCountViewImage"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingLeft="6dp"
+                android:text="@string/_0"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/trackerCountViewImage"
+                android:layout_width="36dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_toEndOf="@+id/tabsCountView"
+                android:layout_toRightOf="@+id/tabsCountView"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/lock_icon_green"
+                android:scaleType="fitCenter"
+                android:paddingTop="10dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginLeft="7dp" />
+
+            <TextView
+                android:id="@+id/trackerCountView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/trackerCountViewImage"
+                android:layout_alignLeft="@id/trackerCountViewImage"
+                android:layout_alignTop="@id/trackerCountViewImage"
+                android:layout_alignEnd="@id/trackerCountViewImage"
+                android:layout_alignRight="@id/trackerCountViewImage"
+                android:layout_alignBottom="@id/trackerCountViewImage"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/_0"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
 
             <EditText
                 android:id="@+id/urlEditText"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
                 android:layout_toStartOf="@+id/settingsButton"
                 android:layout_toLeftOf="@+id/settingsButton"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentBottom="true"
+                android:layout_toEndOf="@+id/trackerCountView"
+                android:layout_toRightOf="@+id/trackerCountView"
                 android:background="@android:color/transparent"
                 android:hint="@string/location_hint"
                 android:importantForAutofill="no"
@@ -56,29 +107,29 @@
 
             <ImageButton
                 android:id="@+id/settingsButton"
-                android:layout_width="wrap_content"
+                android:layout_width="42dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-                android:gravity="center"
-                android:scaleType="fitEnd"
-                android:src="@drawable/settings_icon"
-                android:contentDescription="@string/app_name"
-                android:background="@android:color/transparent"
                 android:adjustViewBounds="true"
-                android:padding="5dp"/>
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/app_name"
+                android:gravity="center"
+                android:scaleType="fitCenter"
+                android:src="@drawable/settings_icon" />
 
         </RelativeLayout>
 
     </androidx.appcompat.widget.Toolbar>
 
+
     <ProgressBar
         android:id="@+id/pageProgressView"
         style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
         android:layout_width="match_parent"
-        android:layout_height="3dp"
+        android:layout_height="5dp"
         android:layout_alignBottom="@id/toolbarView" />
 
     <org.mozilla.geckoview.GeckoView
@@ -86,7 +137,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbarView"
-        tools:context=".MainActivity"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        tools:context=".MainActivity" >
+
+    </org.mozilla.geckoview.GeckoView>
+
+
+<!--    <androidx.gridlayout.widget.GridLayout-->
+<!--        android:id="@+id/tabsGridLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_marginLeft="40dp"-->
+<!--        android:layout_marginTop="105dp"-->
+<!--        android:layout_marginRight="40dp"-->
+<!--        android:layout_marginBottom="40dp"-->
+<!--        android:elevation="5dp"-->
+<!--        android:background="?android:attr/colorBackground"-->
+<!--        android:padding="30dp"-->
+<!--        android:visibility="gone"-->
+<!--        app:columnCount="4"-->
+<!--        app:rowCount="3">-->
+
+
+<!--    </androidx.gridlayout.widget.GridLayout>-->
+
+<!--    <View-->
+<!--        android:id="@+id/darkOverlayView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:background="@color/colorPrimaryDarkTranslucent"-->
+<!--        android:visibility="gone"/>-->
+
 
 </RelativeLayout>
