@@ -1,6 +1,7 @@
 package com.example.geckobrowser;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -21,19 +23,25 @@ import org.mozilla.geckoview.GeckoRuntime;
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoSessionSettings;
 import org.mozilla.geckoview.GeckoView;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 //TODO add horizontal tablet tab picker
 //TODO add downloads
 //TODO undo and redo
 //TODO TABS
+//TODO search completion
 
 public class MainActivity extends AppCompatActivity {
 
     public String SEARCH_URI_BASE = "https://duckduckgo.com/?q=";
     public String INITIAL_URL = "https://start.duckduckgo.com";
-
+    boolean autoHideBar;
+    boolean hideWhiteSplash;
+    boolean searchSuggestions;
     private GeckoView mGeckoView;
     private GeckoSession mGeckoSession;
     private GeckoSessionSettings.Builder settingsBuilder = new GeckoSessionSettings.Builder();
@@ -41,11 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar mProgressView;
     private TextView trackersCountView;
     private ArrayList<String> trackersBlockedList;
-
-    boolean autoHideBar;
-    boolean hideWhiteSplash;
-    boolean searchSuggestions;
-
+    private String[] tabURLs;
+    private int activeTab = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +62,134 @@ public class MainActivity extends AppCompatActivity {
         setupUrlEditText();
         setupSettings();
         setupGeckoView();
+        setupTabs();
 
+
+        //allow opening url from another app
         Intent mIntent = getIntent();
         String action = mIntent.getAction();
         if (action != null && action.equals(Intent.ACTION_VIEW)) {
-            onCommitURL(mIntent.getData().toString());
+            commitURL(mIntent.getData().toString());
         }
+
+    }
+
+    private void setupTabs() {
+
+        //restoring tabs
+        SharedPreferences prefs = getSharedPreferences("dataPrefs", MODE_PRIVATE);
+        tabURLs = prefs.getString("tabURLs", "").split(", ");
+        Log.e("DEBUG", tabURLs[0]);
+        activeTab = prefs.getInt("activeTab", 0);
+
+        commitURL(tabURLs[activeTab]);
+
+//        <TextView
+//        app:layout_rowWeight="1"
+//        app:layout_columnWeight="1"
+//        android:text="A"
+//        android:textAppearance="?android:attr/textAppearanceLarge"
+//        android:padding="30dp"
+//        app:layout_column="0"
+//        app:layout_row="0"
+//        app:layout_gravity="fill" />
+
+
+        //tabview stuff
+        TextView tabsCountView = findViewById(R.id.tabsCountView);
+        tabsCountView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+//                View darkOverlayView = findViewById(R.id.darkOverlayView);
+//                GridLayout tabsGridLayout = findViewById(R.id.tabsGridLayout);
+
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+                alertDialog
+                        .setTitle("Tabs")
+                        .setItems(tabURLs, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                activeTab = i;
+                                commitURL(tabURLs[activeTab]);
+                            }
+                        })
+                        .setPositiveButton("New Tab", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                activeTab = tabURLs.length;
+
+                                // create a new ArrayList
+                                List<String> tmpList = new ArrayList<>(Arrays.asList(tabURLs));
+                                // Add the new element
+                                tmpList.add("");
+                                // Convert the Arraylist to array
+                                tabURLs = tmpList.toArray(tabURLs);
+
+                                tabURLs[activeTab] = "";
+                                commitURL(tabURLs[activeTab]);
+                            }
+                        })
+                        .setNegativeButton("Delete Current Tab", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                if (tabURLs.length > 1) {
+                                    // create a new ArrayList
+//                                List<String> tmpList = new ArrayList<>(Arrays.asList(tabURLs));
+
+                                    List<String> tmpList = new ArrayList<String>();
+                                    for (int j = 0; j < tabURLs.length; j++) {
+                                        if (j!=activeTab) { //add all to a new list apart from old
+                                            tmpList.add(tabURLs[j]);
+                                        }
+                                    }
+
+                                    // Convert the Arraylist to array
+                                    tabURLs = tmpList.toArray(new String[tmpList.size()]);
+
+                                    activeTab = tabURLs.length - 1;
+                                    commitURL(tabURLs[activeTab]);
+                                } else {
+                                    commitURL("");
+                                }
+                            }
+                        })
+                        .create()
+                        .show();
+//                for (String tabURL : tabURLs) {
+//                    Button mValue = new Button(MainActivity.this);
+//                    mValue.setLayoutParams(new TableLayout.LayoutParams(
+//                            TableLayout.LayoutParams.WRAP_CONTENT,
+//                            TableLayout.LayoutParams.WRAP_CONTENT));
+//                    mValue.setTextSize(20);
+//                    mValue.setPadding(10,10,10,10);
+//                    mValue.setAllCaps(false);
+////                    mValue.setBackgroundResource(R.color.colorAccent);
+//                    mValue.setText(tabURL);
+//                    mValue.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            activeTab = Arrays.asList(tabURLs).indexOf(tabURL);
+//                            commitURL(tabURL);
+//                        }
+//                    });
+//
+//                    tabsGridLayout.addView(mValue);
+//                }
+//
+//
+//                if (tabsGridLayout.getVisibility() == View.GONE) {
+//                    tabsGridLayout.setVisibility(View.VISIBLE);
+//                    darkOverlayView.setVisibility(View.VISIBLE);
+//                } else {
+//                    tabsGridLayout.setVisibility(View.GONE);
+//                    darkOverlayView.setVisibility(View.GONE);
+//                }
+
+            }
+        });
+
     }
 
     private void setupSettings() {
@@ -88,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             settingsBuilder.userAgentOverride(prefs.getString("userAgent", ""));
         } else if (prefs.getBoolean("desktopMode", false)) {
             settingsBuilder.userAgentMode(GeckoSessionSettings.USER_AGENT_MODE_DESKTOP);
-            settingsBuilder.displayMode(GeckoSessionSettings.USER_AGENT_MODE_DESKTOP); // test, not used in example.
+            settingsBuilder.displayMode(GeckoSessionSettings.USER_AGENT_MODE_DESKTOP); // not used in example code, remove if issues are caused
             settingsBuilder.viewportMode(GeckoSessionSettings.USER_AGENT_MODE_DESKTOP);
         } else {
             settingsBuilder.userAgentMode(GeckoSessionSettings.USER_AGENT_MODE_MOBILE); //better safe than sorry
@@ -146,19 +273,17 @@ public class MainActivity extends AppCompatActivity {
         urlEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView exampleView, int actionId, KeyEvent event) {
 //                if (actionId == KeyEvent.KEYCODE_ENDCALL || actionId == KeyEvent.KEYCODE_ENTER) {
-                    onCommitURL(urlEditText.getText().toString());
+                commitURL(urlEditText.getText().toString());
 //                }
                 return true;
             }
         });
     }
 
-    private void onCommitURL(String url) {
-        clearTrackersCount();
-
+    private void commitURL(String url) {
         if ((url.contains(".") || url.contains(":")) && !url.contains(" ")) { //maybe add list of domain endings here though an array
             url = url.toLowerCase();
-            if (url.contains("https://") || url.contains("http://")) { } else {
+            if (!url.contains("https://") && !url.contains("http://")) {
                 url = "https://" + url;
             }
             mGeckoSession.loadUri(url);
@@ -181,6 +306,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void refreshTabCount() {
+        TextView tabsCountView = findViewById(R.id.tabsCountView);
+        tabsCountView.setText("" + tabURLs.length);
+    }
+
     private void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         //Find the currently focused view, so we can grab the correct window token from it.
@@ -192,11 +322,53 @@ public class MainActivity extends AppCompatActivity {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    protected void changeLockColour(boolean isHttps) {
+        ImageView v = findViewById(R.id.trackerCountViewImage);
+        if (isHttps) {
+            v.setImageResource(R.drawable.lock_icon_green);
+        } else {
+            v.setImageResource(R.drawable.lock_icon_red);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Runtime.getRuntime().exit(0); //fix only one runtime allowed crash
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        //saving stuff
+        SharedPreferences.Editor editor = getSharedPreferences("dataPrefs", MODE_PRIVATE).edit();
+        //tabs
+        StringBuilder a = new StringBuilder();
+        for (int i = 0; i < tabURLs.length; ) {
+            a.append(tabURLs[i]).append(", ");
+            i++;
+        }
+        editor.putString("tabURLs", a.toString());
+        Log.e("DEBUG", a.toString());
+        //activeTab
+        editor.putInt("activeTab", activeTab);
+
+        editor.apply();
+        super.onPause();
+    }
+
     private class createProgressDelegate implements GeckoSession.ProgressDelegate {
 
         @Override
         public void onPageStart(GeckoSession session, String url) {
             urlEditText.setText(url);
+            tabURLs[activeTab] = url;
+            if (url.contains("https://")) {
+                changeLockColour(true);
+            } else {
+                changeLockColour(false);
+            }
+            clearTrackersCount();
+            refreshTabCount();
         }
 
         @Override
@@ -205,7 +377,9 @@ public class MainActivity extends AppCompatActivity {
 
             if (progress > 0 && progress < 100) {
                 mProgressView.setVisibility(View.VISIBLE);
-                if (hideWhiteSplash) {mGeckoView.setVisibility(View.INVISIBLE);}
+                if (hideWhiteSplash) {
+                    mGeckoView.setVisibility(View.INVISIBLE);
+                }
 
             } else {
                 mProgressView.setVisibility(View.GONE);
@@ -222,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
 
             URL url = null;
             try {
-                url = new URL(event.uri.toString());
+                url = new URL(event.uri);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -232,11 +406,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        Runtime.getRuntime().exit(0); //fix only one runtime allowed crash
-        super.onDestroy();
-    }
 }
 
 

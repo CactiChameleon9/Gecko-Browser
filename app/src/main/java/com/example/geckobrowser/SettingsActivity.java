@@ -12,6 +12,9 @@ import android.widget.Switch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+//TODO homepage setting
+//TODO clear tabs on exit setting
+
 public class SettingsActivity extends AppCompatActivity {
 
     @Override
